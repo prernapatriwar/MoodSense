@@ -20,6 +20,7 @@ touch app/requirements.txt
 # Model folder
 touch model/sentiment_model.pkl
 touch model/tfidf.pkl
+touch model/label_encoder.pkl
 
 # Frontend folder
 touch templates/index.html

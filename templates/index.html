@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MoodSense - Emotion Detector</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>MoodSense 😃</h1>
+      <p>Type a sentence to detect your emotion</p>
+
+      <form action="/predict" method="POST">
+        <textarea
+          name="text"
+          rows="4"
+          placeholder="How are you feeling today?"
+          required
+        >
+{{ text if text else '' }}</textarea
+        >
+        <button type="submit">Analyze Mood</button>
+      </form>
+
+      {% if emotion %}
+      <div class="result">
+        <h2>Detected Emotion: <span>{{ emotion }}</span></h2>
+        <p>Confidence: {{ confidence }}%</p>
+      </div>
+      {% endif %}
+    </div>
+  </body>
+</html>
