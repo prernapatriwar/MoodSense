@@ -1,9 +1,9 @@
 import pandas as pd
 
 # Load the training, testing, and validation datasets
-train_data = pd.read_csv(r'/Users/kaustubhmestri/Projects/MoodSense/data/test.txt', sep=';', names=['text','emotion'])
-test_data = pd.read_csv(r'/Users/kaustubhmestri/Projects/MoodSense/data/train.txt', sep=';', names=['text','emotion'])
-val_data = pd.read_csv(r'/Users/kaustubhmestri/Projects/MoodSense/data/val.txt', sep=';', names=['text','emotion'])
+train_data = pd.read_csv(r'D:\MoodSense\data\train.txt', sep=';', names=['text','emotion'])
+test_data = pd.read_csv(r'D:\MoodSense\data\test.txt', sep=';', names=['text','emotion'])
+val_data = pd.read_csv(r'D:\MoodSense\data\val.txt', sep=';', names=['text','emotion'])
 
 # Check the first few rows
 print(train_data.head())

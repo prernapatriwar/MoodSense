@@ -4,16 +4,16 @@ import nltk
 import re
 from nltk.corpus import stopwords
 
-# ✅ Tell Flask where your templates folder is
-app = Flask(__name__, template_folder='/Users/kaustubhmestri/Projects/MoodSense/templates')
+# Tell Flask where your templates folder is
+app = Flask(__name__, template_folder=r'D:\MoodSense\templates')
 
 # Download stopwords (only once)
 nltk.download('stopwords', quiet=True)
 
-# ✅ Correct model loading order
-model = joblib.load('/Users/kaustubhmestri/Projects/MoodSense/model/sentiment_model.pkl')
-tfidf = joblib.load('/Users/kaustubhmestri/Projects/MoodSense/model/tfidf.pkl')
-label_encoder = joblib.load('/Users/kaustubhmestri/Projects/MoodSense/model/label_encoder.pkl')
+# Correct model loading order
+model = joblib.load(r'D:\MoodSense\model\sentiment_model.pkl')
+tfidf = joblib.load(r'D:\MoodSense\model\tfidf.pkl')
+label_encoder = joblib.load(r'D:\MoodSense\model\label_encoder.pkl')
 
 # Function to clean and preprocess text
 def preprocess_text(text):

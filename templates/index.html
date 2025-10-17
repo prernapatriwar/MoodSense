@@ -3,35 +3,224 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MoodSense - Emotion Detector</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-    />
+    <title>MoodSense - Emotion Analysis</title>
+    <style>
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(135deg, #f7f9fc, #e0e7ff);
+        color: #1e293b;
+        text-align: center;
+        padding: 20px;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+      }
+
+      .container {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      .container:hover {
+        transform: translateY(-5px);
+      }
+
+      h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        color: #1e40af;
+        font-weight: 700;
+      }
+
+      p {
+        font-size: 1.1em;
+        color: #475569;
+        margin-bottom: 20px;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      textarea {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 16px;
+        margin-top: 15px;
+        resize: none;
+        background: #f8fafc;
+        color: #1e293b;
+        transition: border-color 0.3s, box-shadow 0.3s;
+      }
+
+      textarea:focus {
+        border-color: #1e40af;
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        outline: none;
+      }
+
+      button {
+        margin-top: 20px;
+        background: #1e40af;
+        color: #ffffff;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s;
+      }
+
+      button:hover {
+        background: #1e3a8a;
+        transform: translateY(-2px);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      button:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+      }
+
+      .result {
+        margin-top: 25px;
+        background: #f1f5f9;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 4px solid #1e40af;
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      .result h2 {
+        font-size: 1.6em;
+        margin-bottom: 10px;
+        color: #1e293b;
+      }
+
+      .result span {
+        font-weight: 600;
+        color: #1e40af;
+      }
+
+      .result p {
+        font-size: 1em;
+        color: #475569;
+        margin: 0;
+      }
+
+      .error {
+        margin: 15px 0;
+        background: #fee2e2;
+        color: #b91c1c;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+        border-left: 4px solid #b91c1c;
+      }
+
+      .loader {
+        display: none;
+        border: 3px solid #e2e8f0;
+        border-top: 3px solid #1e40af;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        animation: spin 1s linear infinite;
+        margin: 15px auto;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 20px;
+        }
+        h1 {
+          font-size: 2em;
+        }
+        p {
+          font-size: 1em;
+        }
+        textarea {
+          font-size: 14px;
+        }
+        button {
+          padding: 10px 20px;
+          font-size: 14px;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="container">
-      <h1>MoodSense 😃</h1>
-      <p>Type a sentence to detect your emotion</p>
+      <h1>MoodSense</h1>
+      <p>Analyze your emotions with AI-powered text analysis</p>
 
-      <form action="/predict" method="POST">
+      {% if error %}
+      <div class="error" role="alert">{{ error }}</div>
+      {% endif %}
+
+      <form action="/predict" method="POST" id="mood-form">
         <textarea
           name="text"
           rows="4"
           placeholder="How are you feeling today?"
           required
-        >
-{{ text if text else '' }}</textarea
-        >
-        <button type="submit">Analyze Mood</button>
+          aria-label="Enter your text to analyze emotions"
+        >{{ text if text else '' }}</textarea>
+        <button type="submit" id="submit-btn">Analyze Emotion</button>
       </form>
 
       {% if emotion %}
-      <div class="result">
+      <div class="result" role="region" aria-live="polite">
         <h2>Detected Emotion: <span>{{ emotion }}</span></h2>
         <p>Confidence: {{ confidence }}%</p>
       </div>
       {% endif %}
+
+      <div class="loader" id="loader"></div>
     </div>
-  </body>
+
+    <script>
+      const form = document.getElementById('mood-form');
+      const submitBtn = document.getElementById('submit-btn');
+      const loader = document.getElementById('loader');
+
+      form.addEventListener('submit', () => {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Analyzing...';
+        loader.style.display = 'block';
+      });
+    </script>
+  </body>
 </html>
