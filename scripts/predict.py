@@ -8,9 +8,9 @@ from nltk.corpus import stopwords
 nltk.download('stopwords')
 
 # Load the trained model, TF-IDF vectorizer, and label encoder
-model = joblib.load('sentiment_model.pkl')
-tfidf = joblib.load('tfidf.pkl')
-label_encoder = joblib.load('label_encoder.pkl')
+model = joblib.load('/Users/kaustubhmestri/Projects/MoodSense/model/sentiment_model.pkl')
+tfidf = joblib.load('/Users/kaustubhmestri/Projects/MoodSense/model/label_encoder.pkl')
+label_encoder = joblib.load('/Users/kaustubhmestri/Projects/MoodSense/model/tfidf.pkl')
 
 # Function to clean incoming text
 def preprocess_text(text):

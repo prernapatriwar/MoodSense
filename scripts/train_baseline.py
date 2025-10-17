@@ -81,10 +81,10 @@ print(classification_report(y_test, y_pred))
 import joblib
 
 # Save the trained model
-joblib.dump(model, 'sentiment_model.pkl')
+joblib.dump(model, 'model/sentiment_model.pkl')
 
 # Save the TF-IDF vectorizer
-joblib.dump(tfidf, 'tfidf.pkl')
+joblib.dump(tfidf, 'model/tfidf.pkl')
 
 # Save label encoder (optional but useful for inference)
-joblib.dump(label_encoder, 'label_encoder.pkl')
+joblib.dump(label_encoder, 'model/label_encoder.pkl')
