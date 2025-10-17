@@ -124,6 +124,14 @@
         margin: 0;
       }
 
+      .suggestion {
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: #e5e7eb;
+        border-radius: 8px;
+        border-left: 4px solid #10b981;
+      }
+
       .error {
         margin: 15px 0;
         background: #fee2e2;
@@ -157,8 +165,12 @@
       }
 
       @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
 
       @media (max-width: 600px) {
@@ -205,6 +217,10 @@
       <div class="result" role="region" aria-live="polite">
         <h2>Detected Emotion: <span>{{ emotion }}</span></h2>
         <p>Confidence: {{ confidence }}%</p>
+        <div class="suggestion">
+          <h3>Suggestion:</h3>
+          <p>{{ suggestion }}</p>
+        </div>
       </div>
       {% endif %}
 
@@ -222,5 +238,5 @@
         loader.style.display = 'block';
       });
     </script>
-  </body>
+  </body>
 </html>
