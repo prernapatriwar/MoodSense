@@ -1,0 +1,10 @@
+Flask==2.2.2
+scikit-learn==1.0.2
+nltk==3.7
+joblib==1.1.0
+pandas==1.3.3
+numpy==1.21.2
+gunicorn==20.1.0    # For production deployment (use in place of Flask's built-in server)
+werkzeug==2.2.2     # Flask dependency for handling requests
+matplotlib==3.4.3   # Optional: For visualizing model results or data exploration
+requests==2.26.0    # Optional: If you plan to use any external APIs like weather or social media
