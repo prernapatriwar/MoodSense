@@ -1,56 +1,47 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, render_template
 import joblib
 import nltk
 import re
 from nltk.corpus import stopwords
 
-# Initialize Flask app
-app = Flask(__name__)
+# ✅ Tell Flask where your templates folder is
+app = Flask(__name__, template_folder='/Users/kaustubhmestri/Projects/MoodSense/templates')
 
-# Download stopwords for text processing
-nltk.download('stopwords')
+# Download stopwords (only once)
+nltk.download('stopwords', quiet=True)
 
-# Load the trained model, TF-IDF vectorizer, and label encoder
-model = joblib.load('model/sentiment_model.pkl')
-tfidf = joblib.load('model/tfidf.pkl')
-label_encoder = joblib.load('model/label_encoder.pkl')
+# ✅ Correct model loading order
+model = joblib.load('/Users/kaustubhmestri/Projects/MoodSense/model/sentiment_model.pkl')
+tfidf = joblib.load('/Users/kaustubhmestri/Projects/MoodSense/model/tfidf.pkl')
+label_encoder = joblib.load('/Users/kaustubhmestri/Projects/MoodSense/model/label_encoder.pkl')
 
-# Function to clean incoming text
+# Function to clean and preprocess text
 def preprocess_text(text):
-    text = text.lower()  # Convert text to lowercase
-    text = ''.join([char for char in text if char.isalnum() or char.isspace()])  # Remove non-alphabetic characters
+    text = text.lower()
+    text = ''.join([ch for ch in text if ch.isalnum() or ch.isspace()])
+    text = ' '.join([word for word in text.split() if word not in stopwords.words('english')])
     return text
-
-# Prediction endpoint
-@app.route('/predict', methods=['POST'])
-def predict():
-    if request.method == 'POST':
-        # Get the text input from the POST request
-        input_text = request.json['text']
-        
-        # Preprocess the input text
-        processed_text = preprocess_text(input_text)
-        tfidf_input = tfidf.transform([processed_text])  # Convert the text to TF-IDF
-        
-        # Get the prediction from the model
-        prediction = model.predict(tfidf_input)
-        prediction_prob = model.predict_proba(tfidf_input)  # Get the probabilities for all labels
-
-        # Decode the predicted label back to emotion
-        predicted_emotion = label_encoder.inverse_transform(prediction)
-
-        # Return the result as a JSON response
-        result = {
-            'emotion': predicted_emotion[0],  # Predicted emotion
-            'probability': prediction_prob[0].tolist()  # List of probabilities for all classes
-        }
-        return jsonify(result)
 
 # Home route
 @app.route('/')
 def home():
-    return "Welcome to the Mood Prediction API!"
+    return render_template('index.html')  # Flask will look inside the provided template_folder path
 
-# Run the app
+# Prediction route
+@app.route('/predict', methods=['POST'])
+def predict():
+    input_text = request.form['text']
+    processed_text = preprocess_text(input_text)
+
+    tfidf_input = tfidf.transform([processed_text])
+    prediction = model.predict(tfidf_input)
+    prediction_prob = model.predict_proba(tfidf_input)
+
+    emotion = label_encoder.inverse_transform(prediction)[0]
+    confidence = round(max(prediction_prob[0]) * 100, 2)
+
+    return render_template('index.html', text=input_text, emotion=emotion, confidence=confidence)
+
+# Run the Flask app
 if __name__ == '__main__':
     app.run(debug=True)
